@@ -26,8 +26,6 @@
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-
-
     // add axis y and x
     const x = d3.scaleBand()
         .domain([0,1,2,3,4,5,6,7,8,9])
@@ -45,7 +43,7 @@
     // colors, one for variable
     const color = d3.scaleOrdinal()
         .domain(variables)
-        .range(['#e41a1c','#377eb8','#4aaf7d','#9137b8','#4daf4a'])
+        .range(['#e41a1c','#377eb8','#eabd0a','#9137b8','#4daf4a'])
 
 
     // load data from json and drawn
