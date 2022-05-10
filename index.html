@@ -70,8 +70,7 @@
             .attr("fill", d => color(d.key))
             .attr("id",  d => d.key)
             .on("click", swap)
-            .on('mouseover', onMouseover)
-            .on('mouseout', onMouseout)
+
             .selectAll("rect")
             .data(d => d)
             .join("rect")
@@ -88,11 +87,16 @@
             .attr("y", d => y(d[1]))
             .attr("height", d => y(d[0]) - y(d[1]))
             .delay(function(d,i){return(i*50)})
-    }
 
-    Array.prototype.swapItems = function(a, b){
-        this[a] = this.splice(b, 1, this[a])[0];
-        return this;
+        /// wait for the animation to finish and attach  hover events
+        sleep(3000).then(() => {
+            variables.forEach(variable =>
+                svg.selectAll("#" + variable.valueOf())
+                    .on('mouseover', onMouseover)
+                    .on('mouseout', onMouseout)
+            )})
+
+
     }
 
     // swap groups
@@ -115,7 +119,18 @@
         .text("\n" +
             "Click on a variable group to make it easier to compare!");
 
-    function onMouseover(elemData) {
+
+    // utility
+    Array.prototype.swapItems = function(a, b){
+        this[a] = this.splice(b, 1, this[a])[0];
+        return this;
+    }
+
+    const sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+
+    function onMouseover() {
         const groupSelected =  d3.select("#" +this.id)
         groupSelected.selectAll("rect")
             .transition()//Set transition
@@ -123,7 +138,7 @@
 
     }
 
-    function onMouseout(elemData) {
+    function onMouseout() {
 
         d3.select("#" +this.id).selectAll("rect")
             .transition()//Set transition
