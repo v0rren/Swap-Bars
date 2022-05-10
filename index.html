@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="http://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+<div id="SwapBars"></div>
+<script>
+    let variables = ["group1", "group2", "group3","group4","group5"]
+
+    let updateData;
+    // set the dimensions and margins of the graph
+    const margin = {top: 50, right: 30, bottom: 20, left: 50},
+        width = 1000 - margin.left - margin.right,
+        height = 800 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    const svg = d3.select("#SwapBars")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+
+
+    // add axis y and x
+    const x = d3.scaleBand()
+        .domain([0,1,2,3,4,5,6,7,8,9])
+        .range([0, width])
+        .padding([0.2])
+    svg.append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(x).tickSizeOuter(0));
+
+    const y = d3.scaleLinear()
+        .domain([0, 100])
+        .range([ height, 0 ]);
+    svg.append("g")
+        .call(d3.axisLeft(y));
+    // colors, one for variable
+    const color = d3.scaleOrdinal()
+        .domain(variables)
+        .range(['#e41a1c','#377eb8','#4aaf7d','#9137b8','#4daf4a'])
+
+
+    // load data from json and drawn
+    d3.json('bars.json').then(function(data) {
+            updateData = data;
+            Drawn(data);
+        }
+    );
+
+    function Drawn(data) {
+        bars = svg.selectAll("bar").data(data);
+
+        // stack data for variable group
+        const stackedData = d3.stack()
+            .keys(variables)
+            (data)
+
+        // Show the bars
+        svg.append("g")
+            .selectAll("g")
+            .data(stackedData)
+            .join("g")
+            .attr("fill", d => color(d.key))
+            .attr("id",  d => d.key)
+            .on("click", swap)
+            .selectAll("rect")
+            .data(d => d)
+            .join("rect")
+            .attr("x", d => x(d.data.bar_pos))
+            .attr("height", function(d) { return height - y(0); })
+            .attr("y", function(d) { return y(0); })
+            .attr("width",x.bandwidth())
+
+
+        // animation
+        svg.selectAll("rect")
+            .transition()
+            .duration(300)
+            .attr("y", d => y(d[1]))
+            .attr("height", d => y(d[0]) - y(d[1]))
+            .delay(function(d,i){return(i*50)})
+    }
+
+    Array.prototype.swapItems = function(a, b){
+        this[a] = this.splice(b, 1, this[a])[0];
+        return this;
+    }
+
+    // swap groups
+    function swap(){
+        const clickedGroup = this.id;
+        variables = variables.swapItems( 0, variables.indexOf(clickedGroup))
+        svg.selectAll("rect").remove();
+        Drawn(updateData);
+
+    }
+
+    // append title
+    svg.append("text")
+        .attr("x", (width / 2))
+        .attr("y", (0 - margin.top / 2))
+        .attr("text-anchor", "middle")
+        .style("font-size", "24px")
+        .style("font-color", "#3748b8")
+        .text("\n" +
+            "Click on a variable group to make it easier to compare!");
+</script>
+</body>
+
+</html>

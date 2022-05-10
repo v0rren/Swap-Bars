@@ -1,0 +1,12 @@
+[
+  {"bar_pos": 0,  "group1": 7, "group2": 3, "group3":  7, "group4":  15, "group5" : 30},
+  {"bar_pos": 1,  "group1": 10, "group2": 6, "group3":  17, "group4":  15, "group5" : 25},
+  {"bar_pos": 2,  "group1": 4, "group2": 3, "group3":  7, "group4":  15, "group5" : 15},
+  {"bar_pos": 3,  "group1": 10, "group2": 6, "group3":  5, "group4":  15, "group5" : 35},
+  {"bar_pos": 4,  "group1": 4, "group2": 3, "group3":  7, "group4":  15, "group5" : 27},
+  {"bar_pos": 5,  "group1": 10, "group2": 6, "group3":  9, "group4":  15, "group5" : 7},
+  {"bar_pos": 6,  "group1": 4, "group2": 3, "group3":  7, "group4":  16, "group5" : 20},
+  {"bar_pos": 7,  "group1": 10, "group2": 6, "group3":  3, "group4":  13, "group5" : 33},
+  {"bar_pos": 8,  "group1": 4, "group2": 3, "group3":  7, "group4":  15, "group5" : 17},
+  {"bar_pos": 9,  "group1": 10, "group2": 6, "group3":  22, "group4":  15, "group5" : 22}
+]
