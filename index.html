@@ -54,8 +54,6 @@
     );
 
     function Drawn(data) {
-        bars = svg.selectAll("bar").data(data);
-
         // stack data for variable group
         const stackedData = d3.stack()
             .keys(variables)
@@ -69,43 +67,63 @@
             .join("g")
             .attr("fill", d => color(d.key))
             .attr("id",  d => d.key)
+            .attr("class", "Section")
             .on("click", swap)
 
             .selectAll("rect")
             .data(d => d)
             .join("rect")
             .attr("x", d => x(d.data.bar_pos))
-            .attr("height", function(d) { return height - y(0); })
-            .attr("y", function(d) { return y(0); })
+            .attr("height", function(d) { return y(d[0])- y(d[1]); })
+            .attr("y", function(d) { return y(d[1]); })
             .attr("width",x.bandwidth())
 
 
-        // animation
-        svg.selectAll("rect")
-            .transition()
-            .duration(300)
-            .attr("y", d => y(d[1]))
-            .attr("height", d => y(d[0]) - y(d[1]))
-            .delay(function(d,i){return(i*50)})
 
-        /// wait for the animation to finish and attach  hover events
-        sleep(3000).then(() => {
-            variables.forEach(variable =>
-                svg.selectAll("#" + variable.valueOf())
-                    .on('mouseover', onMouseover)
-                    .on('mouseout', onMouseout)
-            )})
+    }
+
+    function renderSection(selection) {
+        selection
+            .attr('fill', d => color(d.key))
+            .attr("id", d => d.key)
+    }
+
+    function renderGroup(selection) {
+        selection
+            .attr("y", function (d) {
+                return y(d[1]);
+            })
+            .attr('height', function (d) {
+                return y(d[0]) - y(d[1]);
+            })
+    }
+
+    function TransitionDrawn(data) {
+        // stack data for variable group
+        const stackedData = d3.stack()
+            .keys(variables)
+            (data)
+
+
+
+        var sections = svg.selectAll('.Section').data(stackedData);
+
+        renderSection(sections.transition().duration(2000));
+
+
+        renderGroup(sections.selectAll('rect')
+            .data(d => d)
+            .transition().duration(2000))
 
 
     }
 
     // swap groups
     function swap(){
-        onMouseout(this)
         const clickedGroup = this.id;
         variables = variables.swapItems( 0, variables.indexOf(clickedGroup))
-        svg.selectAll("#MainGraph").remove();
-        Drawn(updateData);
+        //svg.selectAll("#MainGraph").remove();
+        TransitionDrawn(updateData);
 
     }
 
@@ -126,25 +144,6 @@
         return this;
     }
 
-    const sleep = (milliseconds) => {
-        return new Promise(resolve => setTimeout(resolve, milliseconds))
-    }
-
-    function onMouseover() {
-        const groupSelected =  d3.select("#" +this.id)
-        groupSelected.selectAll("rect")
-            .transition()//Set transition
-            .style('stroke', '#222222')
-
-    }
-
-    function onMouseout() {
-
-        d3.select("#" +this.id).selectAll("rect")
-            .transition()//Set transition
-            .style('stroke', null)
-
-    }
 </script>
 </body>
 
