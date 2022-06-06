@@ -26,24 +26,6 @@
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // add axis y and x
-    const x = d3.scaleBand()
-        .domain([0,1,2,3,4,5,6,7,8,9])
-        .range([0, width])
-        .padding([0.2])
-    svg.append("g")
-        .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(x).tickSizeOuter(0));
-
-    const y = d3.scaleLinear()
-        .domain([0, 100])
-        .range([ height, 0 ]);
-    svg.append("g")
-        .call(d3.axisLeft(y));
-    // colors, one for variable
-    const color = d3.scaleOrdinal()
-        .domain(variables)
-        .range(['#e41a1c','#377eb8','#eabd0a','#9137b8','#4daf4a'])
 
 
     // load data from json and drawn
@@ -54,6 +36,33 @@
     );
 
     function Drawn(data) {
+
+        var maxGroup = 0;
+        for (var i = 0; i < data.length; i++){
+            var tmp = data[i].group1 + data[i].group2 + data[i].group3 + data[i].group4+ data[i].group5;
+            if(tmp > maxGroup)
+                maxGroup = tmp;
+        }
+
+        // add axis y and x
+        const x = d3.scaleBand()
+            .domain([0,1,2,3,4,5,6,7,8,9])
+            .range([0, width])
+            .padding([0.2])
+        svg.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(x).tickSizeOuter(0));
+
+        const y = d3.scaleLinear()
+            .domain([0,  maxGroup + 25]) // we sum 25 for a little bit of overhead
+            .range([ height, 0 ]);
+        svg.append("g")
+            .call(d3.axisLeft(y));
+        // colors, one for variable
+        const color = d3.scaleOrdinal()
+            .domain(variables)
+            .range(['#e41a1c','#377eb8','#eabd0a','#9137b8','#4daf4a'])
+
         // stack data for variable group
         const stackedData = d3.stack()
             .keys(variables)
